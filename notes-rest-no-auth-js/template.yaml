@@ -22,6 +22,9 @@ Resources:
     Properties:
       FunctionName: !Sub ${AWS::StackName}-createNote
       Handler: src/handlers/createNote.handler
+      Policies: 
+        - DynamoDBWritePolicy:
+            TableName: !Ref NotesTable
 
   NotesTable:
     Type: AWS::DynamoDB::Table
@@ -55,7 +58,7 @@ Resources:
         'Fn::Transform':
           Name: 'AWS::Include'
           Parameters:
-            Location: './api.yaml'
+            Location: 'resources/api.yaml'
 
 # Define Execution Role for Lambda and API Gateway for synchronous invocation
   ApiGatewayExecutionRole:
