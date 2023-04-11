@@ -26,7 +26,7 @@ Resources:
   NotesTable:
     Type: AWS::DynamoDB::Table
     Properties:
-    TableName: !Sub ${AWS::StackName}-notesTable
+      TableName: !Sub ${AWS::StackName}-notesTable
       AttributeDefinitions:
         - AttributeName: userId
           AttributeType: S
