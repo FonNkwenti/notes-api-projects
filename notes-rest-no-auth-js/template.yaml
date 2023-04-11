@@ -25,6 +25,14 @@ Resources:
       Policies: 
         - DynamoDBWritePolicy:
             TableName: !Ref NotesTable
+  GetUserNoteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-getUserNote
+      Handler: src/handlers/getuserNote.handler
+      Policies: 
+        - DynamoDBReadPolicy:
+            TableName: !Ref NotesTable
 
   NotesTable:
     Type: AWS::DynamoDB::Table
@@ -76,6 +84,7 @@ Resources:
             Action: 
               - "sts:AssumeRole"
       Path: "/"
+
   ApiGatewayExecutionPolicy: 
     Type: "AWS::IAM::Policy"
     Properties: 
@@ -86,14 +95,16 @@ Resources:
           Action:
             - lambda:*
           Effect: Allow
-          Resource: '*'
-          # Resource: !GetAtt CreateNoteFunction.Arn
+          # Resource: '*'
+          Resource: 
+            - !GetAtt CreateNoteFunction.Arn
+            - !GetAtt GetUserNoteFunction.Arn
       Roles: 
         - Ref: "ApiGatewayExecutionRole"
 
 Outputs:
-  CreateNoteFunction:
-    Description: "API Gateway Endpoint for the CreateNoteFunction"
+  ApiGatewayEndpoint:
+    Description: "API Gateway Endpoint"
     Value: !Sub "https://${NotesApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/notes/"
 
 
