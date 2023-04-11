@@ -4,38 +4,93 @@ Description: >
   REST-no-auth-js
 
   Sample SAM Template for REST-no-auth-js
-  
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+ 
 Globals:
   Function:
-    Timeout: 3
+    Runtime: nodejs18.x
+    Timeout: 30
+    MemorySize: 128
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref NotesTable
 
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  CreateNoteFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      CodeUri: hello-world/
-      Handler: app.lambdaHandler
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: get
+      FunctionName: !Sub ${AWS::StackName}-createNote
+      Handler: src/handlers/createNote.handler
+
+  NotesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+    TableName: !Sub ${AWS::StackName}-notesTable
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: noteId
+          AttributeType: S 
+      KeySchema:
+        - AttributeName: userId 
+          KeyType: HASH 
+        - AttributeName: noteId 
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      TableClass: STANDARD_INFREQUENT_ACCESS
+
+#  Define our API Gateway 
+  NotesApi:
+    Type: AWS::Serverless::Api 
+    Properties:
+      Name: !Sub ${AWS::StackName}-api
+      StageName: Dev 
+      Cors:
+        AllowMethods: "'POST, GET, UPDATE, DELETE'"
+        AllowHeaders: "'X-Forwarded-For'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: './api.yaml'
+
+# Define Execution Role for Lambda and API Gateway for synchronous invocation
+  ApiGatewayExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties: 
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "apigateway.amazonaws.com"
+                - "lambda.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Path: "/"
+  ApiGatewayExecutionPolicy: 
+    Type: "AWS::IAM::Policy"
+    Properties: 
+      PolicyName: "apigw-execution-policy"
+      PolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          Action:
+            - lambda:*
+          Effect: Allow
+          Resource: '*'
+          # Resource: !GetAtt CreateNoteFunction.Arn
+      Roles: 
+        - Ref: "ApiGatewayExecutionRole"
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  CreateNoteFunction:
+    Description: "API Gateway Endpoint for the CreateNoteFunction"
+    Value: !Sub "https://${NotesApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/notes/"
+
+

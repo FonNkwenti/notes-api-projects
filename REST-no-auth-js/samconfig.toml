@@ -17,6 +17,11 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
+s3_prefix = "notes-rest-no-auth-js"
+region = "us-west-1"
+disable_rollback = true
+image_repositories = []
+stack_name = "notes-rest-no-auth-js"
 
 [default.package.parameters]
 resolve_s3 = true
