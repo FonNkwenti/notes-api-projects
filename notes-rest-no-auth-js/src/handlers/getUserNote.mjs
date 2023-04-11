@@ -6,6 +6,7 @@ import { ddbDocClient } from "../libs/ddbDocClient.mjs";
 const tableName = process.env.TABLE_NAME;
 
 export const handler = async (event)=>{
+    
     console.log("Event===", JSON.stringify(event, null, 2));
     if (event.httpMethod  !== "GET") {
         throw new Error (`Expecting GET HTTP method but received ${event.httpMethod} method.`)
@@ -13,7 +14,10 @@ export const handler = async (event)=>{
 
     const userId = event.pathParameters.userId;
     const noteId = event.pathParameters.noteId;
+    console.log("the path parameters are ===", event.pathParameters)
+    console.log(`userId===${userId} and noteId===${noteId}`)
 
+    
     const params = {
         TableName: tableName,
         Key: {
@@ -41,6 +45,3 @@ export const handler = async (event)=>{
     return response
         
     }
-    
-
-}

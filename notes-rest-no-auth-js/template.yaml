@@ -29,7 +29,15 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${AWS::StackName}-getUserNote
-      Handler: src/handlers/getuserNote.handler
+      Handler: src/handlers/getUserNote.handler
+      Policies: 
+        - DynamoDBReadPolicy:
+            TableName: !Ref NotesTable
+  ListUserNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-listUserNotes
+      Handler: src/handlers/listUserNotes.handler
       Policies: 
         - DynamoDBReadPolicy:
             TableName: !Ref NotesTable
@@ -95,10 +103,11 @@ Resources:
           Action:
             - lambda:*
           Effect: Allow
-          # Resource: '*'
-          Resource: 
-            - !GetAtt CreateNoteFunction.Arn
-            - !GetAtt GetUserNoteFunction.Arn
+          Resource: '*'
+          # Resource: 
+          #   - !GetAtt CreateNoteFunction.Arn
+          #   - !GetAtt GetUserNoteFunction.Arn
+          #   - !GetAtt ListUserNoteFunction.Arn
       Roles: 
         - Ref: "ApiGatewayExecutionRole"
 

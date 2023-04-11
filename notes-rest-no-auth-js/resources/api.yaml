@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: "1.0"
-  title: "notes-api"
+  title: "REST Notes API without Auth"
 servers:
   - url: "https://example.com/Dev"
 paths:
@@ -18,9 +18,11 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateNoteFunction.Arn}/invocations
         passthroughBehavior: "when_no_match"
+
+  /notes/{userId}:
     get:
       responses:
-        '200':
+        '201':
           description: "OK"
       x-amazon-apigateway-integration:
         credentials:
@@ -28,5 +30,22 @@ paths:
         type: "aws_proxy"
         httpMethod: "GET"
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getUserNoteFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListUserNotesFunction.Arn}/invocations
+        passthroughBehavior: "when_no_match"
+
+
+  /notes/{userId}/{noteId}:
+    get:
+      responses:
+        '200':
+          description: "User Note Found"
+        # '404':
+        #   description: "Note does not exist"
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: [ ApiGatewayExecutionRole, Arn ]
+        type: "aws_proxy"
+        httpMethod: "GET"
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetUserNoteFunction.Arn}/invocations
         passthroughBehavior: "when_no_match"
