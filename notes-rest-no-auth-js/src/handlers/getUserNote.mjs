@@ -14,16 +14,20 @@ export const handler = async (event)=>{
     if (!event.pathParameters) { 
         throw new Error ("Missing path parameter")
     }
-    if (!event.pathParameters.userId || !event.pathParameters.noteId) {
-        throw new Error ("Missing userId or noteId path parameter")
-    } 
-    if (event.resource !== "/notes/{userId}/{noteId}") {
-        throw new Error(`Expecting /notes/{userId}/{noteId}, received ${event.resource}`)
-        
+    // if (!event.pathParameters.userId || !event.pathParameters.noteId) {
+    //     throw new Error ("Missing userId or noteId path parameter")
+    // } 
+    if (event.resource !== "/notes/{noteId}") {
+        throw new Error(`Expecting /notes/{noteId}, received ${event.resource}`)   
     }
-    const userId = event.pathParameters.userId;
-    const noteId = event.pathParameters.noteId;
+    if (event.queryStringParameters) {
+        throw new Error(`Expecting a userId, received ${event.queryStringParameters}`)   
+    }
     console.log("the path parameters are ===", event.pathParameters)
+    console.log("the query strings are  ===", event.queryStringParameters)
+
+    const userId = event.queryStringParameters
+    const noteId = event.pathParameters.noteId;
     console.log(`userId===${userId} and noteId===${noteId}`)
 
     

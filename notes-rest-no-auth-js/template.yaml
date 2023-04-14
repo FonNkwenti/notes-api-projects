@@ -17,14 +17,14 @@ Globals:
         TABLE_NAME: !Ref NotesTable
 
 Resources:
-  CreateNoteFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-createNote
-      Handler: src/handlers/createNote.handler
-      Policies: 
-        - DynamoDBWritePolicy:
-            TableName: !Ref NotesTable
+  # CreateNoteFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     FunctionName: !Sub ${AWS::StackName}-createNote
+  #     Handler: src/handlers/createNote.handler
+  #     Policies: 
+  #       - DynamoDBWritePolicy:
+  #           TableName: !Ref NotesTable
   GetUserNoteFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -33,14 +33,21 @@ Resources:
       Policies: 
         - DynamoDBReadPolicy:
             TableName: !Ref NotesTable
-  ListUserNotesFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-listUserNotes
-      Handler: src/handlers/listUserNotes.handler
-      Policies: 
-        - DynamoDBReadPolicy:
-            TableName: !Ref NotesTable
+      # Events:
+      #   ApiEvent:
+      #     Type:  Api
+      #     Properties:
+      #       Method: GET
+      #       Path: /notes/{noteId}
+      #       RestApiId: !Ref NotesApi
+  # ListUserNotesFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     FunctionName: !Sub ${AWS::StackName}-listUserNotes
+  #     Handler: src/handlers/listUserNotes.handler
+  #     Policies: 
+  #       - DynamoDBReadPolicy:
+  #           TableName: !Ref NotesTable
 
   NotesTable:
     Type: AWS::DynamoDB::Table
