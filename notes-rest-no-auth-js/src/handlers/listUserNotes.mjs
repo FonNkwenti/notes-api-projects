@@ -11,9 +11,7 @@ export const handler = async (event) => {
         throw new Error (`Expecting GET HTTP method but received ${event.httpMethod} method.`)
             }
     if (event.resource !== "/notes") {
-        throw new Error (`Expecting resource path /notes but received ${event.resource} path.`)
-            
-        
+        throw new Error (`Expecting resource path /notes but received ${event.resource} path.`) 
     }
 
     if (event.queryStringParameters===null || event.queryStringParameters.userId===null)  {
@@ -23,7 +21,6 @@ export const handler = async (event) => {
 
 
     const {userId} = event.queryStringParameters;
-    console.log(event.pathParameters.userId)
     console.log("userId===", userId)
 
      const params = {

@@ -56,6 +56,21 @@ Resources:
           Properties:
             Method: GET
             Path: /notes/{noteId}
+
+  DeleteUserNoteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-deleteUserNote
+      Handler: src/handlers/deleteUserNote.handler
+      Policies: 
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotesTable
+      Events:
+        ApiEvent:
+          Type:  Api
+          Properties:
+            Method: DELETE
+            Path: /notes/{noteId}
             # RestApiId: !Ref NotesApi
 
   ListUserNotesFunction:
