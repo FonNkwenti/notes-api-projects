@@ -11,13 +11,22 @@ export const handler = async (event) => {
     if (event.httpMethod !=="POST") {
         throw new Error(`Expecting POST method, received ${event.httpMethod}`);
     }
+    if (event.queryStringParameters===null || event.queryStringParameters.userId===null) {
+        throw new Error(`Expecting a userId, received ${event.queryStringParameters}`)   
+    }
+    console.log("the path parameters are ===", event.pathParameters)
+    console.log("the query strings are  ===", event.queryStringParameters)
     
-
+    
+    const userId = event.queryStringParameters.userId
     const parsedBody = JSON.parse(event.body)
     console.info("parsedBody==", parsedBody)
-    const { userId, title, content, label = "none"} = parsedBody
+    const {title, content, label = "none"} = parsedBody
+    // const { userId, title, content, label = "none"} = parsedBody
     const now = new Date().toISOString()
     const noteId = randomUUID()
+    
+    console.log(`userId===${userId} and noteId===${noteId}`)
 
     const params = {
         TableName:  tableName,
@@ -30,9 +39,9 @@ export const handler = async (event) => {
             createdAt: now,
             updatedAt: now,
     }
-
     
-    }
+}
+console.log("params===", params)
     let response;
     const command = new PutCommand(params)
     try {

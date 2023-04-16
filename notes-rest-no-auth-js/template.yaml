@@ -1,11 +1,20 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+
+
 Description: >
   REST-no-auth-js
 
   Sample SAM Template for notes-rest-no-auth-js
  
 Globals:
+  # Api:
+  #   MethodSettings:
+  #     - ResourcePath: "/*"
+  #       HttpMethod: "*"
+  #       DataTraceEnabled: True
+  #       LoggingLevel: INFO
+  #       MetricsEnabled: True
   Function:
     Runtime: nodejs18.x
     Timeout: 30
@@ -17,14 +26,22 @@ Globals:
         TABLE_NAME: !Ref NotesTable
 
 Resources:
-  # CreateNoteFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     FunctionName: !Sub ${AWS::StackName}-createNote
-  #     Handler: src/handlers/createNote.handler
-  #     Policies: 
-  #       - DynamoDBWritePolicy:
-  #           TableName: !Ref NotesTable
+  CreateNoteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-createNote
+      Handler: src/handlers/createNote.handler
+      Policies: 
+        - DynamoDBWritePolicy:
+            TableName: !Ref NotesTable
+      Events:
+        ApiEvent:
+          Type:  Api
+          Properties:
+            Method: POST
+            Path: /notes
+            # RestApiId: !Ref NotesApi
+
   GetUserNoteFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -33,21 +50,28 @@ Resources:
       Policies: 
         - DynamoDBReadPolicy:
             TableName: !Ref NotesTable
-      # Events:
-      #   ApiEvent:
-      #     Type:  Api
-      #     Properties:
-      #       Method: GET
-      #       Path: /notes/{noteId}
-      #       RestApiId: !Ref NotesApi
-  # ListUserNotesFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     FunctionName: !Sub ${AWS::StackName}-listUserNotes
-  #     Handler: src/handlers/listUserNotes.handler
-  #     Policies: 
-  #       - DynamoDBReadPolicy:
-  #           TableName: !Ref NotesTable
+      Events:
+        ApiEvent:
+          Type:  Api
+          Properties:
+            Method: GET
+            Path: /notes/{noteId}
+            # RestApiId: !Ref NotesApi
+
+  ListUserNotesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-listUserNotes
+      Handler: src/handlers/listUserNotes.handler
+      Policies: 
+        - DynamoDBReadPolicy:
+            TableName: !Ref NotesTable
+      Events:
+        ApiEvent:
+          Type: Api 
+          Properties:
+            Method: GET
+            Path: /notes
 
   NotesTable:
     Type: AWS::DynamoDB::Table
@@ -67,60 +91,67 @@ Resources:
       TableClass: STANDARD_INFREQUENT_ACCESS
 
 #  Define our API Gateway 
-  NotesApi:
-    Type: AWS::Serverless::Api 
-    Properties:
-      Name: !Sub ${AWS::StackName}-api
-      StageName: Dev 
-      Cors:
-        AllowMethods: "'POST, GET, UPDATE, DELETE'"
-        AllowHeaders: "'X-Forwarded-For'"
-        AllowOrigin: "'*'"
-        MaxAge: "'600'"
-      DefinitionBody:
-        'Fn::Transform':
-          Name: 'AWS::Include'
-          Parameters:
-            Location: 'resources/api.yaml'
+
+  # NotesApi:
+  #   Type: AWS::Serverless::Api 
+  #   Properties:
+  #     Name: !Sub ${AWS::StackName}-api
+  #     StageName: Dev 
+  #     MethodSettings:
+  #       - ResourcePath: "/*"
+  #         HttpMethod: "*"
+  #         DataTraceEnabled: True
+  #         LoggingLevel: INFO
+  #         MetricsEnabled: True
+  #     Cors:
+  #       AllowMethods: "'POST, GET, UPDATE, DELETE'"
+  #       AllowHeaders: "'X-Forwarded-For'"
+  #       AllowOrigin: "'*'"
+  #       MaxAge: "'600'"
+  #     DefinitionBody:
+  #       'Fn::Transform':
+  #         Name: 'AWS::Include'
+  #         Parameters:
+  #           Location: 'resources/api.yaml'
 
 # Define Execution Role for Lambda and API Gateway for synchronous invocation
-  ApiGatewayExecutionRole:
-    Type: "AWS::IAM::Role"
-    Properties: 
-      AssumeRolePolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - 
-            Effect: "Allow"
-            Principal: 
-              Service: 
-                - "apigateway.amazonaws.com"
-                - "lambda.amazonaws.com"
-            Action: 
-              - "sts:AssumeRole"
-      Path: "/"
+  # ApiGatewayExecutionRole:
+  #   Type: "AWS::IAM::Role"
+  #   Properties: 
+  #     AssumeRolePolicyDocument: 
+  #       Version: "2012-10-17"
+  #       Statement: 
+  #         - 
+  #           Effect: "Allow"
+  #           Principal: 
+  #             Service: 
+  #               - "apigateway.amazonaws.com"
+  #               - "lambda.amazonaws.com"
+  #           Action: 
+  #             - "sts:AssumeRole"
+  #     Path: "/"
 
-  ApiGatewayExecutionPolicy: 
-    Type: "AWS::IAM::Policy"
-    Properties: 
-      PolicyName: "apigw-execution-policy"
-      PolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          Action:
-            - lambda:*
-          Effect: Allow
-          Resource: '*'
-          # Resource: 
-          #   - !GetAtt CreateNoteFunction.Arn
-          #   - !GetAtt GetUserNoteFunction.Arn
-          #   - !GetAtt ListUserNoteFunction.Arn
-      Roles: 
-        - Ref: "ApiGatewayExecutionRole"
+  # ApiGatewayExecutionPolicy: 
+  #   Type: "AWS::IAM::Policy"
+  #   Properties: 
+  #     PolicyName: "apigw-execution-policy"
+  #     PolicyDocument: 
+  #       Version: "2012-10-17"
+  #       Statement: 
+  #         Action:
+  #           - lambda:*
+  #         Effect: Allow
+  #         Resource: '*'
+  #         # Resource: 
+  #         #   - !GetAtt CreateNoteFunction.Arn
+  #         #   - !GetAtt GetUserNoteFunction.Arn
+  #         #   - !GetAtt ListUserNoteFunction.Arn
+  #     Roles: 
+        # - Ref: "ApiGatewayExecutionRole"
 
-Outputs:
-  ApiGatewayEndpoint:
-    Description: "API Gateway Endpoint"
-    Value: !Sub "https://${NotesApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/notes/"
+# Outputs:
+#   ApiGatewayEndpoint:
+#     Description: "API Gateway Endpoint"
+#     Value: !Sub "https://${NotesApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/notes/"
 
 

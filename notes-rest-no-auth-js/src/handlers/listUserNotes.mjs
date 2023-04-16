@@ -10,19 +10,19 @@ export const handler = async (event) => {
     if (event.httpMethod  !== "GET") {
         throw new Error (`Expecting GET HTTP method but received ${event.httpMethod} method.`)
             }
-    if (event.resource !== "/notes/{userId}") {
-        throw new Error (`Expecting resource path /notes/{userId} but received ${event.resource} path.`)
+    if (event.resource !== "/notes") {
+        throw new Error (`Expecting resource path /notes but received ${event.resource} path.`)
             
         
     }
 
-    if (!event.pathParameters || !event.pathParameters.userId) {
-        throw new Error ("Missing userId path parameter")
+    if (event.queryStringParameters===null || event.queryStringParameters.userId===null)  {
+        throw new Error(`Expecting a userId, received ${event.queryStringParameters}`)   
     }
 
 
 
-    const userId = event.pathParameters.userId;
+    const {userId} = event.queryStringParameters;
     console.log(event.pathParameters.userId)
     console.log("userId===", userId)
 
