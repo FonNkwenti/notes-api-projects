@@ -31,10 +31,21 @@ export const handler = async (event)=>{
     
     const params = {
         TableName: tableName,
-        Key: {
-            userId,
-            noteId,
-        }
+        KeyConditionExpression: "#ui = \:userId, #ni = \:noteId",
+        ExpressionAttributeNames: {
+            "ui": "userId",
+            "ni": "noteId"
+        },
+        ExpressionAttributeValues:{
+            "\:userId": userId,
+            "\:noteId": noteId
+        },
+        ConditionExpression: "attribute_exists(noteId) AND contains(#ui = \:userId)",
+        ReturnValues: "ALL_OLD"
+        // Key: {
+        //     userId,
+        //     noteId,
+        // }
     }
     const command = new DeleteCommand(params);
     let response
