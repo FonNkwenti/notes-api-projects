@@ -9,7 +9,7 @@ const now = new Date().toISOString()
 export const handler = async (event)=>{
     
     console.log("Event===", JSON.stringify(event, null, 2));
-    if (event.httpMethod  !== "DELETE") {
+    if (event.httpMethod  !== "PATCH") {
         throw new Error (`Expecting DELETE HTTP method but received ${event.httpMethod} method.`)
             }
     if (!event.pathParameters) { 
@@ -28,6 +28,7 @@ export const handler = async (event)=>{
     const userId = event.queryStringParameters.userId
     const {noteId} = event.pathParameters;
     const body = JSON.parse(event.body)
+    body.updatedAt = now
 
     console.log(
         `userId===${userId} 
@@ -53,6 +54,19 @@ export const handler = async (event)=>{
     console.log("ExpressionAttributeNames===", ExpressionAttributeNames)
     console.log("ExpressionAttributeValues===", ExpressionAttributeValues)
 
+    // const params = {
+    //     TableName: tableName,
+    //     Key: {
+    //         userId,
+    //         noteId,
+    //     },
+  
+    //     UpdateExpression: `SET ${UpdateExpression.join(", ")}`,
+    //     ExpressionAttributeNames,
+    //     ExpressionAttributeValues,
+
+    // }
+
     const params = {
         TableName: tableName,
         Key: {
@@ -61,10 +75,7 @@ export const handler = async (event)=>{
         },
   
         UpdateExpression: `SET ${bodyKeys.map((_, index) => `#key${index} = \:value${index}`).join(", ")}`,
-        
-        ExpressionAttributeValues: {
-            "\:userId": userId
-        },
+
         ExpressionAttributeNames: bodyKeys.reduce((acc, key, index)=>({
             ...acc,
             [`#key${index}`]: key,
@@ -83,7 +94,7 @@ export const handler = async (event)=>{
     let response
     try {
         const result = await  ddbDocClient.send(command);
-        // console.log(`Succeeded in deleting the note with id ${noteId} for user with id ${userId}`)
+        console.log('params===', params)
         console.log(result.$metadata.httpStatusCode === 200 ? `Succeeded in updating the note with id ${noteId} for user with id ${userId}`: `Update failed` )
         response = {
             statusCode: 200,

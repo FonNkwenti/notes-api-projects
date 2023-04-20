@@ -56,6 +56,20 @@ Resources:
           Properties:
             Method: GET
             Path: /notes/{noteId}
+  UpdateUserNoteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-updateUserNote
+      Handler: src/handlers/updateUserNote.handler
+      Policies: 
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotesTable
+      Events:
+        ApiEvent:
+          Type:  Api
+          Properties:
+            Method: PATCH
+            Path: /notes/{noteId}
 
   DeleteUserNoteFunction:
     Type: AWS::Serverless::Function
