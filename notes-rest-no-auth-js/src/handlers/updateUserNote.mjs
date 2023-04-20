@@ -1,9 +1,10 @@
 'use strict'
 
-import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "../libs/ddbDocClient.mjs";
 
 const tableName = process.env.TABLE_NAME;
+const now = new Date().toISOString()
 
 export const handler = async (event)=>{
     
@@ -26,9 +27,32 @@ export const handler = async (event)=>{
 
     const userId = event.queryStringParameters.userId
     const {noteId} = event.pathParameters;
-    console.log(`userId===${userId} and noteId===${noteId}`)
+    const body = JSON.parse(event.body)
 
+    console.log(
+        `userId===${userId} 
+        noteId===${noteId}
+        body ===${body}
+        `)
     
+        const bodyKeys = Object.keys(body)
+        console.log("the bodyKeys===", bodyKeys)
+
+    const UpdateExpression = []
+    const ExpressionAttributeNames = {}
+    const ExpressionAttributeValues = {}
+    
+    for (const [key, value] of Object.entries(body)) {
+        UpdateExpression.push(`#${key} = \:${key}`);
+        ExpressionAttributeNames[`#${key}`] = key;
+        ExpressionAttributeValues[`#${key}`] = value;
+        
+    }
+
+    console.log("UpdateExpression===", UpdateExpression)
+    console.log("ExpressionAttributeNames===", ExpressionAttributeNames)
+    console.log("ExpressionAttributeValues===", ExpressionAttributeValues)
+
     const params = {
         TableName: tableName,
         Key: {
@@ -36,21 +60,31 @@ export const handler = async (event)=>{
             noteId,
         },
   
-        ConditionExpression: "attribute_exists(noteId) AND contains(userId, \:userId)",
+        UpdateExpression: `SET ${bodyKeys.map((_, index) => `#key${index} = \:value${index}`).join(", ")}`,
         
-        ReturnValues: "ALL_OLD",
         ExpressionAttributeValues: {
             "\:userId": userId
-        }
+        },
+        ExpressionAttributeNames: bodyKeys.reduce((acc, key, index)=>({
+            ...acc,
+            [`#key${index}`]: key,
+        }), {}),
+        ExpressionAttributeValues: bodyKeys.reduce(
+            (acc, key, index) => ({
+                ...acc,
+                [`:value${index}`]: body[key]
+            }), {}
+        )
+
     }
 
     
-    const command = new DeleteCommand(params);
+    const command = new UpdateCommand(params);
     let response
     try {
         const result = await  ddbDocClient.send(command);
         // console.log(`Succeeded in deleting the note with id ${noteId} for user with id ${userId}`)
-        console.log(result.$metadata.httpStatusCode === 200 ? `Succeeded in deleting the note with id ${noteId} for user with id ${userId}`: `Delete failed` )
+        console.log(result.$metadata.httpStatusCode === 200 ? `Succeeded in updating the note with id ${noteId} for user with id ${userId}`: `Update failed` )
         response = {
             statusCode: 200,
             body: JSON.stringify(result),

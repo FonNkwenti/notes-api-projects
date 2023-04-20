@@ -40,7 +40,11 @@ export const handler = async (event)=>{
     let response
     try {
         const {Item} = await  ddbDocClient.send(command);
-        console.log(`Succeeded in getting  the note with id ${noteId} for user with id ${userId}`, Item)
+        if (!Item) {
+            throw new Error("The Note is either empty or doesn't exist")
+        }
+        console.log(Item ? `Succeeded in getting  the note with id ${noteId} for user with id ${userId}
+        ${Item}` : `Note with id ${noteId} does not exist`)
         response = {
             statusCode: 200,
             body: JSON.stringify(Item),
@@ -49,7 +53,7 @@ export const handler = async (event)=>{
         console.log("Error", err)
             response = {
                 statusCode: err.statusCode || 500,
-                body: JSON.stringify({err})
+                body: JSON.stringify({err: err.Error})
             }
         }
     console.log("response===", response)
