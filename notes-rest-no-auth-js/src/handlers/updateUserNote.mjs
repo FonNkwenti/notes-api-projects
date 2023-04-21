@@ -44,28 +44,17 @@ export const handler = async (event)=>{
     const ExpressionAttributeValues = {}
     
     for (const [key, value] of Object.entries(body)) {
+        console.log(`key = ${key}, value = ${value}`)
         UpdateExpression.push(`#${key} = \:${key}`);
+
         ExpressionAttributeNames[`#${key}`] = key;
-        ExpressionAttributeValues[`#${key}`] = value;
+        ExpressionAttributeValues[`\:${key}`] = value;
         
     }
 
     console.log("UpdateExpression===", UpdateExpression)
     console.log("ExpressionAttributeNames===", ExpressionAttributeNames)
     console.log("ExpressionAttributeValues===", ExpressionAttributeValues)
-
-    // const params = {
-    //     TableName: tableName,
-    //     Key: {
-    //         userId,
-    //         noteId,
-    //     },
-  
-    //     UpdateExpression: `SET ${UpdateExpression.join(", ")}`,
-    //     ExpressionAttributeNames,
-    //     ExpressionAttributeValues,
-
-    // }
 
     const params = {
         TableName: tableName,
@@ -74,21 +63,13 @@ export const handler = async (event)=>{
             noteId,
         },
   
-        UpdateExpression: `SET ${bodyKeys.map((_, index) => `#key${index} = \:value${index}`).join(", ")}`,
-
-        ExpressionAttributeNames: bodyKeys.reduce((acc, key, index)=>({
-            ...acc,
-            [`#key${index}`]: key,
-        }), {}),
-        ExpressionAttributeValues: bodyKeys.reduce(
-            (acc, key, index) => ({
-                ...acc,
-                [`:value${index}`]: body[key]
-            }), {}
-        )
+        UpdateExpression: `SET ${UpdateExpression.join(", ")}`,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
 
     }
 
+  
     
     const command = new UpdateCommand(params);
     let response
