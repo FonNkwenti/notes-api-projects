@@ -37,24 +37,44 @@ export const handler = async (event)=>{
         `)
     
         const bodyKeys = Object.keys(body)
-        console.log("the bodyKeys===", bodyKeys)
+        console.log("the bodyKeys===", bodyKeys) // bodyKeys=== [ 'label', 'updatedAt' ]
 
     const UpdateExpression = []
     const ExpressionAttributeNames = {}
     const ExpressionAttributeValues = {}
     
     for (const [key, value] of Object.entries(body)) {
-        console.log(`key = ${key}, value = ${value}`)
+        // console.log(`key = ${key}, value = ${value}`)
         UpdateExpression.push(`#${key} = \:${key}`);
-
         ExpressionAttributeNames[`#${key}`] = key;
         ExpressionAttributeValues[`\:${key}`] = value;
         
     }
+    const uE = bodyKeys.map((key, index, arr) => 
+        `#${key} = :${key}`
+    )
 
+    const eAN = bodyKeys.reduce((acc, key) =>({
+        ...acc,
+        [`#${key}`]: key
+    }), {})
+    const eAV = bodyKeys.reduce((acc, key) =>({
+        ...acc,
+        [`:${key}`]: body[key]
+    }), {})
+
+
+    // Object.entries(animals).forEach(([key, value]) => {
+    //     console.log(`${key}: ${value}`)
+    // });
+
+    console.log('uE===', uE)
+    console.log('eAN===', eAN)
+    console.log('eAV===', eAV)
     console.log("UpdateExpression===", UpdateExpression)
     console.log("ExpressionAttributeNames===", ExpressionAttributeNames)
     console.log("ExpressionAttributeValues===", ExpressionAttributeValues)
+
 
     const params = {
         TableName: tableName,
@@ -68,8 +88,6 @@ export const handler = async (event)=>{
         ExpressionAttributeValues,
 
     }
-
-  
     
     const command = new UpdateCommand(params);
     let response
