@@ -50,7 +50,7 @@ export const handler = async (event)=>{
         ExpressionAttributeValues[`\:${key}`] = value;
         
     }
-    const uE = bodyKeys.map((key, index, arr) => 
+    const uE = bodyKeys.map((key) => 
         `#${key} = :${key}`
     )
 
