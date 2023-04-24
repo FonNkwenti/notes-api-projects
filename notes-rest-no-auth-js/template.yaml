@@ -26,11 +26,11 @@ Globals:
         TABLE_NAME: !Ref NotesTable
 
 Resources:
-  CreateNoteFunction:
+  CreateUserNoteFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-createNote
-      Handler: src/handlers/createNote.handler
+      FunctionName: !Sub ${AWS::StackName}-createUserNote
+      Handler: src/handlers/createUserNote.handler
       Policies: 
         - DynamoDBWritePolicy:
             TableName: !Ref NotesTable
@@ -60,7 +60,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${AWS::StackName}-updateUserNote
-      Handler: src/handlers/updateUserNote.handler
+      CodeUri: src/
+      Handler: handlers/updateUserNote.handler
       Policies: 
         - DynamoDBCrudPolicy:
             TableName: !Ref NotesTable
@@ -181,7 +182,7 @@ Resources:
 Outputs:
   CreateNoteEndpoint:
     Description: "Create Note Endpoint"
-      Value: !Sub "https://${AWS::StackName}.execute-${AWS::Region}.amazonaws.com/Prod/notes"
+    Value: !Sub "https://${AWS::StackName}.execute-${AWS::Region}.amazonaws.com/Prod/notes"
 
 
 
