@@ -1,8 +1,13 @@
 'use strict';
 
-import { lambdaHandler } from '../../app.mjs';
-import { expect } from 'chai';
-var event, context;
+import { handler } from '../../createUserNote.mjs';
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { ddbDocClient } from "../../../../libs/ddbDocClient.mjs";
+import { readFileSync } from "fs";
+
+const event = readFileSync('./events/createUserNote.json');
+
+
 
 describe('Tests index', function () {
     it('verifies successful response', async () => {
