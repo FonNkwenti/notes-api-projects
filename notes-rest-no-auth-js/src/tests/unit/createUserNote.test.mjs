@@ -1,18 +1,24 @@
 'use strict';
 
 import { handler } from '../../createUserNote.mjs';
+import { mockClient } from "aws-sdk-client-mock";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "../../../../libs/ddbDocClient.mjs";
 import { readFileSync } from "fs";
 
 const event = readFileSync('./events/createUserNote.json');
+const ddbMock = mockClient(ddbDocClient);
 
 console.log(event.body)
+
+beforeEach(() => {
+    ddbMock.reset();
+  });
 
 describe('Unit test for Lambda function', () => {
     it('should create a note', async () => {
       // Create a mock DDB client
-      const ddbDocClient = new AWS.DynamoDB.DocumentClient();
+    //   const ddbDocClient = new AWS.DynamoDB.DocumentClient();
       ddbDocClient.send.mockResolvedValue({
         attributes: {
           userId: '1234567890',
@@ -24,21 +30,22 @@ describe('Unit test for Lambda function', () => {
           updatedAt: '2023-04-25T00:00:00.000Z',
         },
       });
+      ddbDocClient.send.mockResolvedValue
   
       // Create a test event
-      const event = {
-        httpMethod: 'POST',
-        queryStringParameters: {
-          userId: '1234567890',
-        },
-        body: JSON.stringify({
-          title: 'My Note',
-          content: 'This is my note.',
-        }),
-      };
+    //   const event = {
+    //     httpMethod: 'POST',
+    //     queryStringParameters: {
+    //       userId: '1234567890',
+    //     },
+    //     body: JSON.stringify({
+    //       title: 'My Note',
+    //       content: 'This is my note.',
+    //     }),
+    //   };
   
       // Call the Lambda function
-      const result = await lambdaHandler(event);
+      const result = await handler(event);
   
       // Assert that the Lambda function returns the expected response
       expect(result.statusCode).toEqual(201);
