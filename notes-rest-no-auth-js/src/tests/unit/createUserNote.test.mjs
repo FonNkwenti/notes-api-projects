@@ -32,19 +32,6 @@ describe('Unit test for Lambda function', () => {
       });
       ddbDocClient.send.mockResolvedValue
   
-      // Create a test event
-    //   const event = {
-    //     httpMethod: 'POST',
-    //     queryStringParameters: {
-    //       userId: '1234567890',
-    //     },
-    //     body: JSON.stringify({
-    //       title: 'My Note',
-    //       content: 'This is my note.',
-    //     }),
-    //   };
-  
-      // Call the Lambda function
       const result = await handler(event);
   
       // Assert that the Lambda function returns the expected response
