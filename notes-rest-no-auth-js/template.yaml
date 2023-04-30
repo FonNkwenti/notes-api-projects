@@ -40,7 +40,7 @@ Resources:
           Properties:
             Method: POST
             Path: /notes
-            # RestApiId: !Ref NotesApi
+            RestApiId: !Ref NotesAPI
 
   GetUserNoteFunction:
     Type: AWS::Serverless::Function
@@ -56,6 +56,7 @@ Resources:
           Properties:
             Method: GET
             Path: /notes/{noteId}
+            RestApiId: !Ref NotesAPI
   UpdateUserNoteFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -71,6 +72,8 @@ Resources:
           Properties:
             Method: PATCH
             Path: /notes/{noteId}
+            RestApiId: !Ref NotesAPI
+            
 
   DeleteUserNoteFunction:
     Type: AWS::Serverless::Function
@@ -86,7 +89,7 @@ Resources:
           Properties:
             Method: DELETE
             Path: /notes/{noteId}
-            # RestApiId: !Ref NotesApi
+            RestApiId: !Ref NotesAPI
 
   ListUserNotesFunction:
     Type: AWS::Serverless::Function
@@ -102,6 +105,7 @@ Resources:
           Properties:
             Method: GET
             Path: /notes
+            RestApiId: !Ref NotesAPI
 
   NotesTable:
     Type: AWS::DynamoDB::Table
@@ -120,7 +124,16 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       TableClass: STANDARD_INFREQUENT_ACCESS
 
-#  Define our API Gateway 
+## Defining a Simple API Resource
+  NotesAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Dev
+      TracingEnabled: true
+      Tags:
+        Name: !Sub "${AWS::StackName}-API"
+
+#  Define our API Gateway for OpenAPI
 
   # NotesApi:
   #   Type: AWS::Serverless::Api 
