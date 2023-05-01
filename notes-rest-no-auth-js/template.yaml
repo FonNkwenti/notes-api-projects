@@ -107,6 +107,15 @@ Resources:
             Path: /notes
             RestApiId: !Ref NotesAPI
 
+## Defining a Simple API Resource
+  NotesAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Dev
+      TracingEnabled: true
+      Name: !Sub "${AWS::StackName}-API"
+
+  ## Defining our Notes table
   NotesTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -124,14 +133,6 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       TableClass: STANDARD_INFREQUENT_ACCESS
 
-## Defining a Simple API Resource
-  NotesAPI:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: Dev
-      TracingEnabled: true
-      Tags:
-        Name: !Sub "${AWS::StackName}-API"
 
 #  Define our API Gateway for OpenAPI
 
