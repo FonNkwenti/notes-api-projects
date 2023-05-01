@@ -4,7 +4,7 @@ import { handler } from '../../createUserNote.mjs';
 import { mockClient } from "aws-sdk-client-mock";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "../../../../libs/ddbDocClient.mjs";
-import { readFileSync } from "fs";
+import { readFileSync, readFile } from "fs";
 
 const event = readFileSync('./events/createUserNote.json');
 const ddbMock = mockClient(ddbDocClient);
