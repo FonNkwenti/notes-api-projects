@@ -8,13 +8,6 @@ Description: >
   Sample SAM Template for notes-rest-no-auth-js
  
 Globals:
-  # Api:
-  #   MethodSettings:
-  #     - ResourcePath: "/*"
-  #       HttpMethod: "*"
-  #       DataTraceEnabled: True
-  #       LoggingLevel: INFO
-  #       MetricsEnabled: True
   Function:
     Runtime: nodejs18.x
     Timeout: 30
