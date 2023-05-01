@@ -189,7 +189,7 @@ Resources:
 Outputs:
   CreateNoteEndpoint:
     Description: "Create Note Endpoint"
-    Value: !Sub "https://${AWS::StackName}.execute-${AWS::Region}.amazonaws.com/Prod/notes"
+    Value: !Sub "https://${AWS::StackName}.execute-${AWS::Region}.amazonaws.com/Dev/notes"
 
 
 
