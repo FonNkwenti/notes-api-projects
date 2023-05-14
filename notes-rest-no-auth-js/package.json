@@ -8,7 +8,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "sam build && sam validate",
     "deploy": "sam deploy --no-confirm-changeset",
-    "build_deploy":"npm run build & npm run deploy"
+    "build_deploy": "npm run build & npm run deploy"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
   },
   "keywords": [],
   "author": "",
@@ -16,6 +21,7 @@
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.310.0",
     "@aws-sdk/lib-dynamodb": "^3.310.0",
+    "aws-sdk": "^2.1377.0",
     "esbuild": "^0.17.16"
   }
 }

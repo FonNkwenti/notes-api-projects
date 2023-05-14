@@ -1,4 +1,4 @@
-# notes REST API
+# Notes REST API
 
 This is a Notes App REST API built using AWS SAM (Serverless Application Model).
 
