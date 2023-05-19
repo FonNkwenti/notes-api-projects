@@ -22,11 +22,14 @@
  * 3. Invoke the handler function with a request that contains the userId, noteId and other attributes.
  * 4. Check the results of the handler to make sure that it matches the expected result
  */
+
+
 // import the createUserNote handler from createUserNote.mjs
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { handler } from "../../../src/handlers/createUserNote.mjs";
 // import Dynamodb Document Client from libs
 import { ddbDocClient } from "../../../src/libs/ddbDocClient.mjs";
+import { randomUUID } from "crypto";
 
 // importing the aws-sdk-mock-client library
 import { mockClient } from "aws-sdk-client-mock";
@@ -47,7 +50,8 @@ describe('Test createUserNote handler', () => {
       const item = { noteId: '123', userId: 'abc123', note: 'This is a test note' }
 
       ddbMockClient.on(PutCommand).resolves({Item: item}); // mock the response from the PutCommand to return Item object as the response
-      const mockEvent = {httpMethod: 'GET',
+      const mockEvent = {
+      httpMethod: 'POST',
       queryStringParameters: {userId: 'abc123'},
       pathParameters: {noteId: '123'},
       resource: '/notes/{noteId}'
