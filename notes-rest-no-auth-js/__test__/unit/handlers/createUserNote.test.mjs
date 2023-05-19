@@ -50,7 +50,8 @@ describe('Test createUserNote handler', () => {
       const item = { noteId: '123', userId: 'abc123', note: 'This is a test note' }
 
       ddbMockClient.on(PutCommand).resolves({Item: item}); // mock the response from the PutCommand to return Item object as the response
-      const mockEvent = {httpMethod: 'POST',
+      const mockEvent = {
+      httpMethod: 'POST',
       queryStringParameters: {userId: 'abc123'},
       pathParameters: {noteId: '123'},
       resource: '/notes/{noteId}'
