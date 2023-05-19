@@ -1,11 +1,11 @@
 // import the getUserNote handler from getUserNote.mjs
 import { GetCommand } from "@aws-sdk/lib-dynamodb";
-import { getUserNote } from "../../handlers/getUserNote.mjs";
+import { handler } from "../../../src/handlers/getUserNote.mjs";
 // import Dynamodb Document Client from libs
-import { ddbDocClient } from "../../libs/ddbDocClient.mjs";
+import { ddbDocClient } from "../../../src/libs/ddbDocClient.mjs";
 
 // importing the aws-sdk-mock-client library
-import { mockClient } from "aws-sdk-mock-client";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe('Test getUserNote handler', () => {
     // create a mock client
@@ -29,7 +29,7 @@ describe('Test getUserNote handler', () => {
       resource: '/notes/{noteId}'
       }
 
-      const result = await getUserNote(mockEvent);
+      const result = await handler(mockEvent);
 
       const expectedResult = {
         statusCode: 200,
@@ -38,7 +38,7 @@ describe('Test getUserNote handler', () => {
       }
 
       // compare the result with the expected result
-      expectedResult(result).toEqual(expectedResult)
+      expect(result).toEqual(expectedResult)
     
     })
 }

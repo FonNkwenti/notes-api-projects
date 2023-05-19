@@ -1,3 +1,11 @@
+/**
+ * The createUserNote function.
+ * What does this function do? The createUserNote function expects API Gateway Proxy event with an HTTP POST method, are resouce path of /notes, and a JSON body. It also expects to receive a 'userId' parameter as a query string parameter. The JSON body should contain the following fields: 'title', 'content', and 'label'
+ * When the function gets the request from the API Gateway proxy event, it will generate a UUID for the noteId field and set the createAt and updatedAt fields 
+ * Then function will use the PutCommand from the ddDocClient object to create the item in DynamoDB. A successful operation should return a 201 HTTP status code and a response body.
+ * A failed operation should return a 500 status code
+ * 
+ */
 'use strict'
 
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
