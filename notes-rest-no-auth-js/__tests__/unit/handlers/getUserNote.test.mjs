@@ -7,6 +7,8 @@ import { ddbDocClient } from "../../../src/libs/ddbDocClient.mjs";
 // importing the aws-sdk-mock-client library
 import { mockClient } from "aws-sdk-client-mock";
 
+const tableName = process.env.TABLE_NAME;
+
 describe('Test getUserNote handler', () => {
     // create a mock client
     const ddbMockClient  = mockClient(ddbDocClient);
@@ -18,27 +20,37 @@ describe('Test getUserNote handler', () => {
     })
 
     // invoke and test the getUserNote handler
-    it('should get a user note from DynamoDB', async () => {
+    it('should get an existing user note from DynamoDB', async () => {
 
-      const item = { noteId: '123', userId: 'abc123', note: 'This is a test note' }
-
-      ddbMockClient.on(GetCommand).resolves({Item: item}); // mock the response from the GetCommand to return Item object as the response
-      const mockEvent = {httpMethod: 'GET',
-      queryStringParameters: {userId: 'abc123'},
-      pathParameters: {noteId: '123'},
-      resource: '/notes/{noteId}'
+      const mockEvent = {
+        httpMethod: 'GET',
+        queryStringParameters: {userId: 'abc123'},
+        pathParameters: {noteId: '123'},
+        resource: '/notes/{noteId}'
+      }
+      const item = {
+        userId: 'abc123',
+        noteId: '57b41921-9746-4496-aeb3-74605d081ce2',
+        title: 'Test Note',
+        content: 'Test Content',
+        label: 'Test Label',
+        createdAt: '2023-05-20T11:19:44.697Z',
+        updatedAt: '2023-05-20T11:19:44.697Z'
       }
 
-      const result = await handler(mockEvent);
-
-      const expectedResult = {
-        statusCode: 200,
-        body: JSON.stringify(item)
-      
+       // Define the response from the GetCommand
+      const getUserNoteResponse = {
+        Item: item
       }
 
-      // compare the result with the expected result
-      expect(result).toEqual(expectedResult)
+      ddbMockClient.on(GetCommand).resolves(getUserNoteResponse); // mock the response from the GetCommand to the expected response
+
+      const response = await handler(mockEvent);
+        console.log("mockResponse===", response)
+
+      // Assert that the response matches the expected output
+      expect(response.statusCode).toBe(200);
+      expect(JSON.parse(response.body)).toEqual(getUserNoteResponse.Item)
     
     })
 }
