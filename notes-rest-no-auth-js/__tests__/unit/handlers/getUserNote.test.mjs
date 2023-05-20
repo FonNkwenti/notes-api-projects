@@ -7,7 +7,6 @@ import { ddbDocClient } from "../../../src/libs/ddbDocClient.mjs";
 // importing the aws-sdk-mock-client library
 import { mockClient } from "aws-sdk-client-mock";
 
-const tableName = process.env.TABLE_NAME;
 
 describe('Test getUserNote handler', () => {
     // create a mock client
@@ -39,20 +38,21 @@ describe('Test getUserNote handler', () => {
       }
 
        // Define the response from the GetCommand
-      const getUserNoteResponse = {
+      const getCommandResponse = {
         Item: item
       }
 
-      ddbMockClient.on(GetCommand).resolves(getUserNoteResponse); // mock the response from the GetCommand to the expected response
+      ddbMockClient.on(GetCommand).resolves(getCommandResponse); // mock the response from the GetCommand to the expected response
 
       const response = await handler(mockEvent);
         console.log("mockResponse===", response)
 
       // Assert that the response matches the expected output
       expect(response.statusCode).toBe(200);
-      expect(JSON.parse(response.body)).toEqual(getUserNoteResponse.Item)
+      expect(JSON.parse(response.body)).toEqual(getCommandResponse.Item)
     
     })
+
 }
 
 )
