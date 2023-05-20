@@ -29,7 +29,6 @@ import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { handler } from "../../../src/handlers/createUserNote.mjs";
 // import Dynamodb Document Client from libs
 import { ddbDocClient } from "../../../src/libs/ddbDocClient.mjs";
-import { randomUUID } from "crypto";
 
 // importing the aws-sdk-mock-client library
 import { mockClient } from "aws-sdk-client-mock";
@@ -46,28 +45,57 @@ describe('Test createUserNote handler', () => {
     // invoke and test the createUserNote handler
     it('should create a user note in DynamoDB', async () => {
 
-      const item = { noteId: '123', userId: 'abc123', note: 'This is a test note' }
-
-      ddbMockClient.on(PutCommand).resolves({Item: item}); // mock the response from the PutCommand to return Item object as the response
       const mockEvent = {
       httpMethod: 'POST',
       queryStringParameters: {userId: 'abc123'},
-      pathParameters: {noteId: '123'},
-      resource: '/notes/{noteId}'
+      body: JSON.stringify({
+        title: "Test Note",
+        content: "Test Content",
+        label: "Test Label"
+      })
       }
 
-      const result = await handler(mockEvent);
+      const item = { 
+        userId: 'abc123', 
+        title: "Test Note", 
+        content: "Test Content", 
+        label: "Test Label", 
+      }
 
-      const expectedResult = {
-        statusCode: 200,
-        body: JSON.stringify(item)
+      const putCommandResponse = {
+        $metadata: {
+          httpStatusCode: 201,
+        }
+      }
+
+      ddbMockClient.on(PutCommand).resolves(putCommandResponse); // Mock the ddbDocClient.send function to return the expected response
+
+      const response = await handler(mockEvent);
+      console.log("response===",response)
       
-      }
 
-      // compare the result with the expected result
-      expect(result).toEqual(expectedResult)
-    
-    })
+      expect(response.statusCode).toBe(201);
+      expect(JSON.parse(response.body)).toEqual(
+        {
+          userId: "abc123",
+          noteId: expect.any(String),
+          title: "Test Note",
+          content: "Test Content",
+          label: "Test Label",
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+
+        }
+      )
+
+      expect(JSON.parse(response.body)).toEqual({
+        ...item, 
+        noteId: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      })
+
+        })
 }
 
 )
