@@ -1,5 +1,5 @@
-// import the getUserNote handler from getUserNote.mjs
 import { GetCommand } from "@aws-sdk/lib-dynamodb";
+// import the getUserNote handler from getUserNote.mjs
 import { handler } from "../../../src/handlers/getUserNote.mjs";
 // import Dynamodb Document Client from libs
 import { ddbDocClient } from "../../../src/libs/ddbDocClient.mjs";
@@ -10,7 +10,7 @@ import { mockClient } from "aws-sdk-client-mock";
 
 describe('Test getUserNote handler', () => {
     // create a mock client
-    const ddbMockClient  = mockClient(ddbDocClient);
+    const ddbMockClient = mockClient(ddbDocClient);
 
     // reset the history and behavior of the moack after each test so they don't interfere with each other  
 
@@ -44,6 +44,7 @@ describe('Test getUserNote handler', () => {
 
       ddbMockClient.on(GetCommand).resolves(getCommandResponse); // mock the response from the GetCommand to the expected response
 
+      // invoke the handler with the mockEvent
       const response = await handler(mockEvent);
         console.log("mockResponse===", response)
 

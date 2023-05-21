@@ -56,10 +56,11 @@ export const handler = async (event)=>{
             body: JSON.stringify(result),
         }
     } catch (err) {
-        console.log("Error", err)
+        console.log("Error", JSON.stringify(err, null, 2))
             response = {
-                statusCode: err.statusCode || 500,
+                statusCode: err.$metadata?.httpStatusCode || 500,
                 body: JSON.stringify({err})
+
             }
         }
     console.log("response===", response)
