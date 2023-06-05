@@ -8,6 +8,11 @@
  */
 'use strict'
 
+// /**
+//  * @param {import('aws-lambda).APIGatewayEvent} event
+//  * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>}
+//  */
+
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "../libs/ddbDocClient.mjs";
 import { randomUUID } from "crypto";

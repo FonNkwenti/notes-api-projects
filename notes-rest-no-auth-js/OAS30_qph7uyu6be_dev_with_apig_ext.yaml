@@ -1,0 +1,59 @@
+openapi: "3.0.1"
+info:
+  title: "notes-rest-no-auth-js"
+  version: "2023-05-26 22:39:58UTC"
+servers:
+- url: "https://qph7uyu6be.execute-api.us-west-1.amazonaws.com/{basePath}"
+  variables:
+    basePath:
+      default: "dev"
+paths:
+  /notes/{noteId}:
+    get:
+      responses:
+        default:
+          description: "Default response for GET /notes/{noteId}"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-1:404148889442:function:notes-rest-no-auth-js-getUserNote/invocations"
+        connectionType: "INTERNET"
+    parameters:
+    - name: "noteId"
+      in: "path"
+      description: "Generated path parameter for noteId"
+      required: true
+      schema:
+        type: "string"
+  /notes:
+    post:
+      responses:
+        default:
+          description: "Default response for POST /notes"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-1:404148889442:function:notes-rest-no-auth-js-createUserNote/invocations"
+        connectionType: "INTERNET"
+components:
+  x-amazon-apigateway-integrations:
+    unusedIntegration_h71qibt:
+      payloadFormatVersion: "2.0"
+      type: "aws_proxy"
+      httpMethod: "POST"
+      uri: "arn:aws:apigateway:us-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-1:404148889442:function:notes-rest-no-auth-js-createUserNote/invocations"
+      connectionType: "INTERNET"
+x-amazon-apigateway-cors:
+  allowMethods:
+  - "*"
+  allowHeaders:
+  - "*"
+  exposeHeaders:
+  - "*"
+  maxAge: 0
+  allowCredentials: false
+  allowOrigins:
+  - "*"
+x-amazon-apigateway-importexport-version: "1.0"
