@@ -68,7 +68,7 @@ describe('Test createUserNote handler', () => {
         }
       }
 
-      ddbMockClient.on(PutCommand).resolves(putCommandResponse); // Mock the ddbDocClient.send function to return the expected response
+      // ddbMockClient.on(PutCommand).resolves(putCommandResponse); // Mock the ddbDocClient.send function to return the expected response
 
       const response = await handler(mockEvent);
       console.log("response===",response)
